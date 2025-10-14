@@ -7,31 +7,17 @@
     </p>
 
     <!-- PLANILLAS LOCAL -->
-    <UploaderSeccion
-      titulo="📘 Planillas del equipo Local"
-      color="blue"
-      v-model="planillasLocal"
-    />
+    <UploaderSeccion :titulo="'📘 Planillas del equipo Local: ' + local" color="blue" v-model="planillasLocal" />
 
     <!-- PLANILLAS VISITA -->
-    <UploaderSeccion
-      titulo="📕 Planillas del equipo Visitante"
-      color="red"
-      v-model="planillasVisita"
-    />
+    <UploaderSeccion :titulo="'📕 Planillas del equipo Visitante: ' + visitante" color="red" v-model="planillasVisita" />
 
     <!-- INFORME DEL PARTIDO -->
-    <UploaderSeccion
-      titulo="📝 Informe del Partido"
-      color="green"
-      v-model="informePartido"
-    />
+    <UploaderSeccion titulo="📝 Informe del Partido" color="green" v-model="informePartido" />
 
     <div class="mt-8 flex justify-end">
-      <button
-        @click="enviarArchivos"
-        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium"
-      >
+      <button @click="enviarArchivos"
+        class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-medium">
         Enviar Archivos
       </button>
     </div>
@@ -44,7 +30,16 @@ import UploaderSeccion from './UploaderSeccion.vue'
 const planillasLocal = ref([])
 const planillasVisita = ref([])
 const informePartido = ref([])
-
+defineProps({
+  local: {
+    type: String,
+    required: true,
+  },
+  visitante: {
+    type: String,
+    required: true,
+  },
+})
 const enviarArchivos = () => {
   const total = {
     local: planillasLocal.value,

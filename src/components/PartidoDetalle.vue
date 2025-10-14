@@ -29,7 +29,8 @@
         </div>
         <div>
           <label class="text-sm font-medium text-gray-700">Hora</label>
-          <input readonly v-model="partido.hora" disabled class="w-full p-2 border rounded-lg bg-gray-50" />
+          <input readonly :value="partido.hora.concat(' .PM')" disabled
+            class="w-full p-2 border rounded-lg bg-gray-50" />
         </div>
       </div>
 
@@ -114,19 +115,23 @@
 
   <!-- Tab de Eventos -->
   <div v-else-if="selectedTab === 'eventos'">
-    <EventosPartido />
+    <EventosPartido :equipos="{
+      local: partido.local,
+      visitante: partido.visitante
+    }" />
   </div>
 
   <!-- Tab de Archivos -->
   <div v-else-if="selectedTab === 'archivos'">
-    <ArchivosPartidos />
+    <ArchivosPartidos :local="partido.local.nombre" :visitante="partido.visitante.nombre"/>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import EventosPartido from './EventosPartido.vue'
 import ArchivosPartidos from './ArchivosPartidos.vue'
+import axios from 'axios'
 const tabs = [
   { name: 'informe', label: 'Informe General' },
   { name: 'eventos', label: 'Goles / Amonestados / Expulsados / Sustituciones' },
@@ -138,13 +143,42 @@ const selectedTab = ref('informe')
 const partido = ref({
   torneo: 'Torneo Clausura 2025',
   fecha: '06/10/2025',
-  hora: '16:00',
-  local: { nombre: 'Club Central', goles: 0, amarillas: 0, rojas: 0 },
-  visitante: { nombre: 'Deportivo Norte', goles: 0, amarillas: 0, rojas: 0 },
+  hora: '',
+  local: { id: '', nombre: '', goles: 0, amarillas: 0, rojas: 0 },
+  visitante: { id: '', nombre: '', goles: 0, amarillas: 0, rojas: 0 },
   incidencias: '',
   observaciones: '',
 })
+onMounted(() => {
+  traerPartido()
+})
+const traerPartido = () => {
+  axios.get("http://localhost:8080/api/arbitros/designaciones?idArbitro=1&estado=PENDIENTE").then((response) => {
+    const Parsedpartido = response.data[0].partido
+    const hora = Parsedpartido.fechaCalendario.split(',')[2].trim();
+    const [horas, minutos] = hora.split(':');
+    const hora24 = `${horas}:${minutos}`;
+    const partes = Parsedpartido.fechaCalendario.split(',');
+    const dia = partes[0].trim();
+    const fecha = partes[1].trim();
+    const fechaFormateada = `${dia} ${fecha}`;
+    console.log(Parsedpartido);
 
+    partido.value = {
+      torneo: Parsedpartido.torneo,
+      fecha: fechaFormateada,
+      hora: hora24,
+      local: { id: Parsedpartido.idClubLocal, nombre: Parsedpartido.local, goles: 0, amarillas: 0, rojas: 0 },
+      visitante: { id: Parsedpartido.idClubVisitante, nombre: Parsedpartido.visitante, goles: 0, amarillas: 0, rojas: 0 },
+      incidencias: '',
+      observaciones: '',
+    }
+
+
+  }).catch((error) => {
+    console.error(error);
+  });
+}
 
 const enviarInforme = () => {
   console.log('Informe enviado:', partido.value)
@@ -159,7 +193,7 @@ const resetearFormulario = () => {
 }
 
 const minutos = ref({
-  primerTiempo: partido.value.hora,
+  primerTiempo: "",
   minutosAdicionalesPT: 0,
   segundoTiempo: "", // se va a calcular automáticamente
   minutosAdicionalesST: 0
@@ -191,7 +225,8 @@ const calcularHoraSegundoTiempo = () => {
 
 // Observa cambios en minutos adicionales o la hora del partido
 watch(
-  () => [partido.value.hora, minutos.value.minutosAdicionalesPT],
+  () =>
+    [partido.value.hora, minutos.value.minutosAdicionalesPT],
   calcularHoraSegundoTiempo,
   { immediate: true }
 );

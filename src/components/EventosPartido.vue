@@ -27,8 +27,8 @@
                     <input v-model="a.minuto" type="number" class="w-24 border p-2 rounded-lg" placeholder="Min"
                         min="1" />
                     <select v-model="a.equipo" class="border p-2 rounded-lg">
-                        <option value="Local">Local</option>
-                        <option value="Visitante">Visitante</option>
+                        <option :value="props.equipos.local.id">{{ props.equipos.local.nombre }}</option>
+                        <option :value="props.equipos.visitante.id">{{ props.equipos.visitante.nombre }}</option>
                     </select>
                     <button @click="amonestados.splice(i, 1)" class="text-red-500 hover:text-red-700">
                         <CircleX />
@@ -48,7 +48,7 @@
         <div v-else-if="selectedSubtab === 'expulsados'">
             <h3 class="text-lg font-semibold mb-2 text-gray-700">Expulsados</h3>
             <div class="space-y-3">
-                <div v-for="(e, i) in expulsados" :key="i" class="flex items-center gap-3">
+                <div v-for="(e, i) in expulsados" :key="i" class="flex items-center gap-3 flex-wrap">
                     <input v-model="e.nombre" class="flex-1 border p-2 rounded-lg" placeholder="Jugador" />
                     <select name="tipo" id="tipo" class="border p-2 rounded-lg">
                         <option value="jugador">Jugador</option>
@@ -57,14 +57,19 @@
                     <input v-model="e.minuto" type="number" class="w-24 border p-2 rounded-lg" placeholder="Min"
                         min="1" />
                     <select v-model="e.equipo" class="border p-2 rounded-lg">
-                        <option value="Local">Local</option>
-                        <option value="Visitante">Visitante</option>
+                        <option :value="props.equipos.local.id">{{ props.equipos.local.nombre }}</option>
+                        <option :value="props.equipos.visitante.id">{{ props.equipos.visitante.nombre }}</option>
                     </select>
                     <button @click="expulsados.splice(i, 1)" class="text-red-500 hover:text-red-700">
                         <CircleX />
                     </button> <button class="text-green-500 hover:text-green-700">
                         <CircleCheckBig />
                     </button>
+                    <div class="flex w-[calc(100%-4.4rem)] flex-wrap gap-2">
+                        <label :for="i" class="mr-2">Informe</label>
+                        <textarea :name="i" :id="i" rows="4" cols="20" class="w-full border rounded-lg">
+                        </textarea>
+                    </div>
                 </div>
             </div>
             <button @click="expulsados.push({ nombre: '', minuto: '', equipo: '' })"
@@ -83,8 +88,8 @@
                     <input v-model="s.minuto" type="number" class="w-24 border p-2 rounded-lg" placeholder="Min"
                         min="1" />
                     <select v-model="s.equipo" class="border p-2 rounded-lg">
-                        <option value="Local">Local</option>
-                        <option value="Visitante">Visitante</option>
+                        <option :value="props.equipos.local.id">{{ props.equipos.local.nombre }}</option>
+                        <option :value="props.equipos.visitante.id">{{ props.equipos.visitante.nombre }}</option>
                     </select>
                     <button @click="sustituciones.splice(i, 1)" class="text-red-500 hover:text-red-700">
                         <CircleX />
@@ -107,8 +112,8 @@
                         min="1" />
                     <input v-model="g.jugador" class="flex-1 border p-2 rounded-lg" placeholder="Jugador" />
                     <select name="club" id="c" class="border p-2 rounded-lg w-32">
-                        <option value="local">Local</option>
-                        <option value="visita">Visita</option>
+                        <option :value="props.equipos.local.id">{{ props.equipos.local.nombre }}</option>
+                        <option :value="props.equipos.visitante.id">{{ props.equipos.visitante.nombre }}</option>
                     </select>
                     <button @click="goles.splice(i, 1)" class="text-red-500 hover:text-red-700">
                         <CircleX />
@@ -137,7 +142,16 @@ const subtabs = [
     { name: 'sustituciones', label: 'Sustituciones' },
     { name: 'goles', label: 'Goles' }
 ]
-
+const props = defineProps({
+    equipos: {
+        type: Object,
+        default: () => ({
+            local: { id: '', nombre: '', },
+            visitante: { id: '', nombre: '', },
+        }),
+        required: true
+    }
+})
 const selectedSubtab = ref('amonestados')
 
 const amonestados = ref([
@@ -153,6 +167,7 @@ const expulsados = ref([
         jugador: '',
         minuto: '',
         equipo: '',
+        informe: '',
     },
 ])
 const sustituciones = ref([
@@ -170,3 +185,8 @@ const goles = ref([
     },
 ])
 </script>
+<style scoped>
+textarea {
+    resize: none;
+}
+</style>

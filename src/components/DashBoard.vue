@@ -23,7 +23,7 @@
                             </p>
                         </div>
                         <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Asignado</span>
-                        <span>Rol : {{ }}</span>
+                        <span>Rol : {{partido.rol }}</span>
                     </li>
                 </ul>
             </section>
