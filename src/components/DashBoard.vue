@@ -23,7 +23,7 @@
                             </p>
                         </div>
                         <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Asignado</span>
-                        <span>Rol : {{partido.rol }}</span>
+                        <span>Rol : {{ partido.rol }}</span>
                     </li>
                 </ul>
             </section>
@@ -103,6 +103,7 @@ const ultimosPartidos = ref([
 const susp = ref([
     // { local: 'Club A', visitante: 'Club B', fecha: '10/10/2025', hora: '16:00' },
     // { local: 'Club C', visitante: 'Club D', fecha: '12/10/2025', hora: '18:30' },
+
 ])
 const estadisticas = ref({
     partidos: 45,
@@ -120,7 +121,7 @@ const proximos = () => {
         prox.forEach(element => {
             proximosPartidos.value.push(element.partido)
             console.log(proximosPartidos.value);
-            
+
         });
     }).catch((error) => {
         console.error(error);
