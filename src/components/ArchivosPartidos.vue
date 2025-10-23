@@ -46,7 +46,6 @@ const enviarArchivos = () => {
     visitante: planillasVisita.value,
     informe: informePartido.value,
   }
-  console.log('Archivos cargados:', total)
   alert('Archivos cargados correctamente ✅')
 }
 </script>

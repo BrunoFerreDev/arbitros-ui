@@ -115,32 +115,35 @@
 
   <!-- Tab de Eventos -->
   <div v-else-if="selectedTab === 'eventos'">
-    <EventosPartido :equipos="{
-      local: partido.local,
-      visitante: partido.visitante
-    }" />
+    <Eventos :local="partido.local.nombre" :visitante="partido.visitante.nombre" :idClubLocal="partido.local.id"
+      :idClubVisitante="partido.visitante.id" :partido="partidoId" />
+
   </div>
 
   <!-- Tab de Archivos -->
   <div v-else-if="selectedTab === 'archivos'">
-    <ArchivosPartidos :local="partido.local.nombre" :visitante="partido.visitante.nombre"/>
+    <ArchivosPartidos :local="partido.local.nombre" :visitante="partido.visitante.nombre" />
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
-import EventosPartido from './EventosPartido.vue'
+import Eventos from './Eventos.vue'
 import ArchivosPartidos from './ArchivosPartidos.vue'
 import axios from 'axios'
+import { useRoute } from 'vue-router'
 const tabs = [
   { name: 'informe', label: 'Informe General' },
-  { name: 'eventos', label: 'Goles / Amonestados / Expulsados / Sustituciones' },
+  { name: 'eventos', label: 'Goles / Amonestados / Expulsados / Sustituciones ' },
   { name: 'archivos', label: 'Archivos / Planillas' },
 ]
+const route = useRoute();
+const partidoId = Number(route.params.partidoId);
 
 const selectedTab = ref('informe')
 
 const partido = ref({
+  idPartido: partidoId,
   torneo: 'Torneo Clausura 2025',
   fecha: '06/10/2025',
   hora: '',
@@ -162,9 +165,9 @@ const traerPartido = () => {
     const dia = partes[0].trim();
     const fecha = partes[1].trim();
     const fechaFormateada = `${dia} ${fecha}`;
-    console.log(Parsedpartido);
 
     partido.value = {
+      idPartido: response.data.idPartido,
       torneo: Parsedpartido.torneo,
       fecha: fechaFormateada,
       hora: hora24,
@@ -176,12 +179,10 @@ const traerPartido = () => {
 
 
   }).catch((error) => {
-    console.error(error);
   });
 }
 
 const enviarInforme = () => {
-  console.log('Informe enviado:', partido.value)
   alert('Informe del partido enviado correctamente ✅')
 }
 
