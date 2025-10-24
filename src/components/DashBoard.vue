@@ -10,13 +10,13 @@
         </div>
 
         <ul class="divide-y divide-gray-200">
-          <li v-for="(partido, i) in proximosPartidos" :key="i" class="py-3 flex justify-between items-center">
+          <li class="py-3 flex justify-between items-center">
             <div>
               <p class="font-medium text-gray-700">
-                {{ partido.local }} vs {{ partido.visitante }}
+                {{ local.nombre }} vs {{ visitante.nombre }}
               </p>
               <p class="text-sm text-gray-500">
-                {{ partido.fechaCalendario }} · {{ partido.hora }}
+                {{ partido.fechaCalendario }}
               </p>
             </div>
             <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">Asignado</span>
@@ -27,7 +27,7 @@
       </section>
 
       <!-- Últimos Partidos Dirigidos -->
-      <section class="bg-white shadow rounded-2xl p-5">
+      <!-- <section class="bg-white shadow rounded-2xl p-5">
         <div class="flex items-center justify-between mb-3">
           <h2 class="text-xl font-semibold text-gray-800">
             Últimos Partidos Dirigidos
@@ -38,17 +38,16 @@
         </div>
 
         <ul class="divide-y divide-gray-200">
-          <li v-for="(partido, i) in ultimosPartidos" :key="i" class="py-3 flex justify-between">
-            <div>
-              <p class="font-medium text-gray-700">
-                {{ partido.local }} vs {{ partido.visitante }}
-              </p>
-              <p class="text-sm text-gray-500">{{ partido.fechaCalendario }}</p>
-            </div>
-            <span class="text-sm font-medium text-gray-600">Resultado: {{ partido.resultado }}</span>
-          </li>
+          <div>
+            <p class="font-medium text-gray-700">
+              {{ local.nombre }} vs {{ visitante.nombre }}
+            </p>
+            <p class="text-sm text-gray-500">{{ partido.fechaCalendario }}</p>
+          </div>
+          <span class="text-sm font-medium text-gray-600">Resultado: {{ resultado ? resultado : 'No hay resultado'
+            }}</span>
         </ul>
-      </section>
+      </section> -->
     </div>
 
     <!-- Columna lateral -->
@@ -90,23 +89,10 @@
 </template>
 
 <script setup>
-import { onBeforeMount, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { RouterLink } from "vue-router";
 import axios from "axios";
 
-const proximosPartidos = ref([
-  // { local: 'Club A', visitante: 'Club B', fecha: '10/10/2025', hora: '16:00' },
-  // { local: 'Club C', visitante: 'Club D', fecha: '12/10/2025', hora: '18:30' },
-]);
-
-const ultimosPartidos = ref([
-  // { local: 'Club X', visitante: 'Club Y', fecha: '03/10/2025', resultado: '2 - 1' },
-  // { local: 'Club Z', visitante: 'Club W', fecha: '29/09/2025', resultado: '0 - 0' },
-]);
-const susp = ref([
-  // { local: 'Club A', visitante: 'Club B', fecha: '10/10/2025', hora: '16:00' },
-  // { local: 'Club C', visitante: 'Club D', fecha: '12/10/2025', hora: '18:30' },
-]);
 const estadisticas = ref({
   partidos: 45,
   tarjetas: 130,
@@ -120,44 +106,52 @@ const notificaciones = ref([
     fecha: "04/10/2025",
   },
 ]);
-const proximos = () => {
-  axios
-    .get(
-      "http://localhost:8080/api/arbitros/designaciones?idArbitro=1&estado=PENDIENTE"
-    )
-    .then((response) => {
-      const prox = response.data;
-      prox.forEach((element) => {
-        proximosPartidos.value.push(element.partido);
-      });
-    })
-    .catch((error) => {
-    });
-};
-const finalizados = () => {
-  axios
-    .get(
-      "http://localhost:8080/api/arbitros/designaciones?idArbitro=1&estado=FINALIZADO"
-    )
-    .then((response) => {
-      ultimosPartidos.value = response.data;
-    })
-    .catch((error) => {
-    });
-};
-const suspendidos = () => {
-  axios
-    .get(
-      "http://localhost:8080/api/arbitros/designaciones?idArbitro=1&estado=SUSPENDIDO"
-    )
-    .then((response) => {
-      susp.value = response.data;
-    })
-    .catch((error) => {
-    });
-};
-onBeforeMount(() => {
-  proximos();
+
+const designacion = ref({})
+const partido = ref({})
+const local = ref({})
+const visitante = ref({})
+const torneo = ref({})
+const traerDesignacion = () => {
+  axios.get('http://localhost:8080/api/arbitros/designaciones?idArbitro=1&estado=PENDIENTE').then((response) => {
+    const datos = response.data;
+    designacion.value = {
+      idDesignacion: datos.idDesignacion,
+      rol: datos.rol
+    };
+    partido.value = {
+      idPartido: datos.partido.idPartido,
+      fechaTorneo: datos.partido.fechaTorneo,
+      fechaCalendario: datos.partido.fechaCalendario,
+      estado: datos.partido.estado,
+      local: datos.partido.local,
+      visitante: datos.partido.visitante,
+      torneo: datos.partido.torneo,
+    }
+    torneo.value = {
+      id: torneo.id,
+      nombre: torneo.nombre,
+      temporada: torneo.temporada,
+      categoria: torneo.categoria,
+      tipo: torneo.tipo,
+      fechaInicio: torneo.fechaInicio,
+      fechaFin: torneo.fechaFin,
+      estado: torneo.estado,
+      reglamentoUrl: torneo.reglamentoUrl,
+      codigoTorneo: torneo.codigoTorneo
+    }
+    const dataLocal = partido.value.local;
+    const dataVisita = partido.value.visitante;
+    local.value = dataLocal
+    visitante.value = dataVisita
+
+    console.log(partido.value)
+  }).catch((error) => {
+    console.log(error)
+  })
+}
+onMounted(() => {
+  traerDesignacion()
 });
 </script>
 

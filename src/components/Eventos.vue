@@ -195,6 +195,7 @@ const newEvent = ref({
     detalleExtra: '',
     partido: props.partido,
     jugador: null,
+    detalle: '',
 });
 const obtenerJugadores = () => {
     axios.get("http://localhost:8080/api/jugador/obtener?idClub=" + props.idClubLocal)
@@ -246,7 +247,7 @@ function saveEvent() {
     const data = {
         minuto: newEvent.value.minuto,
         tipo: newEvent.value.tipo,
-        detalleExtra: newEvent.value.detalleExtra,
+        detalleExtra: newEvent.value.detalleExtra + " | |  " + newEvent.value.detalle,
         partido: newEvent.value.partido,
         jugador: selectedPlayer.value.id,
     }

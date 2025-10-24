@@ -6,7 +6,9 @@
                     <th class="px-4 py-3 font-medium text-gray-700">Tipo</th>
                     <th class="px-4 py-3 font-medium text-gray-700">Minuto</th>
                     <th class="px-4 py-3 font-medium text-gray-700">Jugador</th>
+                    <th class="px-4 py-3 font-medium text-gray-700">FICHA / DNI</th>
                     <th class="px-4 py-3 font-medium text-gray-700">Detalle Extra</th>
+                    <th class="px-4 py-3 font-medium text-gray-700">Club</th>
                 </tr>
             </thead>
 
@@ -33,7 +35,13 @@
                         {{ evento?.jugador || 'Jugador no disponible' }}
                     </td>
                     <td class="px-4 py-4 text-gray-700">
+                        {{ formatDni.format(evento?.dni) || '-' }}
+                    </td>
+                    <td class="px-4 py-4 text-gray-700">
                         {{ evento?.detalleExtra || '-' }}
+                    </td>
+                    <td class="px-4 py-4 text-gray-700">
+                        {{ evento?.club || '-' }}
                     </td>
                 </tr>
             </tbody>
@@ -43,7 +51,7 @@
 
 <script setup>
 import { defineProps } from 'vue';
-
+let formatDni = new Intl.NumberFormat('es-AR', { style: 'decimal', minimumFractionDigits: 0, maximumFractionDigits: 0 });
 // 1. Define la prop que el componente espera recibir
 const props = defineProps({
     // Asumimos que es un array, puede venir de tu API

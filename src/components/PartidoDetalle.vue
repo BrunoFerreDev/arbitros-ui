@@ -5,8 +5,8 @@
     <nav class="-mb-px space-x-8 mx-auto flex items-center justify-around">
       <button v-for="tab in tabs" :key="tab.name" @click="selectedTab = tab.name" :class="[
         selectedTab === tab.name
-          ? 'border-green-600 text-green-600'
-          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+          ? 'border-green-600 text-green-600 cursor-pointer'
+          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 cursor-pointer',
         'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-md'
       ]">
         {{ tab.label }}
@@ -21,15 +21,15 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <div>
           <label class="text-sm font-medium text-gray-700">Torneo</label>
-          <input readonly v-model="partido.torneo" disabled class="w-full p-2 border rounded-lg bg-gray-50" />
+          <input readonly v-model="torneo.nombre" disabled class="w-full p-2 border rounded-lg bg-gray-50" />
         </div>
         <div>
-          <label class="text-sm font-medium text-gray-700">Fecha</label>
-          <input readonly v-model="partido.fecha" disabled class="w-full p-2 border rounded-lg bg-gray-50" />
+          <label class="text-sm font-medium text-gray-700">Dia y hora</label>
+          <input readonly v-model="partido.fechaCalendario" disabled class="w-full p-2 border rounded-lg bg-gray-50" />
         </div>
         <div>
-          <label class="text-sm font-medium text-gray-700">Hora</label>
-          <input readonly :value="partido.hora.concat(' .PM')" disabled
+          <label class="text-sm font-medium text-gray-700">Fecha N -</label>
+          <input readonly v-model="partido.fechaTorneo" disabled
             class="w-full p-2 border rounded-lg bg-gray-50" />
         </div>
       </div>
@@ -39,26 +39,26 @@
         <!-- Local -->
         <div class="border rounded-2xl p-4">
           <h2 class="text-lg font-semibold text-gray-800 mb-2 text-center">🏠 Local</h2>
-          <p class="text-center text-gray-700 font-medium mb-3">{{ partido.local.nombre }}</p>
+          <p class="text-center text-gray-700 font-medium mb-3">{{ local.nombre }}</p>
           <label class="text-sm text-gray-700">Goles</label>
-          <input readonly type="number" v-model="partido.local.goles" class="w-full border p-2 rounded-lg mb-3" />
+          <input readonly type="number" v-model="local.golesLocal" class="w-full border p-2 rounded-lg mb-3" />
           <label class="text-sm text-gray-700">Tarjetas Amarillas</label>
-          <input readonly type="number" v-model="partido.local.amarillas" class="w-full border p-2 rounded-lg mb-3" />
+          <input readonly type="number" v-model="local.amarillasLocal" class="w-full border p-2 rounded-lg mb-3" />
           <label class="text-sm text-gray-700">Tarjetas Rojas</label>
-          <input readonly type="number" v-model="partido.local.rojas" class="w-full border p-2 rounded-lg" />
+          <input readonly type="number" v-model="local.rojasLocal" class="w-full border p-2 rounded-lg" />
         </div>
 
         <!-- Visitante -->
         <div class="border rounded-2xl p-4">
           <h2 class="text-lg font-semibold text-gray-800 mb-2 text-center">🚩 Visitante</h2>
-          <p class="text-center text-gray-700 font-medium mb-3">{{ partido.visitante.nombre }}</p>
+          <p class="text-center text-gray-700 font-medium mb-3">{{ visitante.nombre }}</p>
           <label class="text-sm text-gray-700">Goles</label>
-          <input readonly type="number" v-model="partido.visitante.goles" class="w-full border p-2 rounded-lg mb-3" />
+          <input readonly type="number" v-model="visitante.golesVisitante" class="w-full border p-2 rounded-lg mb-3" />
           <label class="text-sm text-gray-700">Tarjetas Amarillas</label>
-          <input readonly type="number" v-model="partido.visitante.amarillas"
+          <input readonly type="number" v-model="visitante.amarillasVisitante"
             class="w-full border p-2 rounded-lg mb-3" />
           <label class="text-sm text-gray-700">Tarjetas Rojas</label>
-          <input readonly type="number" v-model="partido.visitante.rojas" class="w-full border p-2 rounded-lg" />
+          <input readonly type="number" v-model="visitante.rojasVisitante" class="w-full border p-2 rounded-lg" />
         </div>
       </div>
     </section>
@@ -68,11 +68,11 @@
         <!-- Primer Tiempo -->
         <div>
           <label class="text-sm font-medium text-gray-700">Primer Tiempo:</label>
-          <input type="time" v-model="minutos.primerTiempo" class="w-full p-2 border rounded-lg" />
+          <input type="time" class="w-full p-2 border rounded-lg" />
         </div>
         <div>
           <label class="text-sm font-medium text-gray-700">Minutos adicionales:</label>
-          <input type="number" min="0" v-model="minutos.minutosAdicionalesPT" class="w-full p-2 border rounded-lg" />
+          <input type="number" min="0" class="w-full p-2 border rounded-lg" />
         </div>
 
         <!-- Segundo Tiempo -->
@@ -82,15 +82,15 @@
         </div>
         <div>
           <label class="text-sm font-medium text-gray-700">Minutos adicionales:</label>
-          <input type="number" min="0" v-model="minutos.minutosAdicionalesST" class="w-full p-2 border rounded-lg" />
+          <input type="number" min="0" class="w-full p-2 border rounded-lg" />
         </div>
       </section>
 
-      <div class="mt-4 p-4 bg-gray-100 rounded-lg">
+      <!-- <div class="mt-4 p-4 bg-gray-100 rounded-lg">
         <p class="text-sm text-gray-800">⏱️ Primer tiempo total: <strong>{{ totalPrimerTiempo }} min</strong></p>
         <p class="text-sm text-gray-800">⏱️ Segundo tiempo total: <strong>{{ totalSegundoTiempo }} min</strong></p>
         <p class="text-lg font-semibold text-gray-900 mt-2">🏁 Total partido: {{ totalPartido }} minutos</p>
-      </div>
+      </div> -->
     </section>
     <!-- Observaciones -->
     <section class="bg-white shadow rounded-2xl p-6 my-6">
@@ -101,8 +101,7 @@
         placeholder="Ejemplo: Partido suspendido por lluvia..."></textarea>
 
       <div class="mt-6 flex justify-end gap-3">
-        <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg"
-          @click="resetearFormulario">
+        <button class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2 px-4 rounded-lg">
           Limpiar
         </button>
         <button class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg"
@@ -115,14 +114,13 @@
 
   <!-- Tab de Eventos -->
   <div v-else-if="selectedTab === 'eventos'">
-    <Eventos :local="partido.local.nombre" :visitante="partido.visitante.nombre" :idClubLocal="partido.local.id"
-      :idClubVisitante="partido.visitante.id" :partido="partidoId" />
-
+    <Eventos :local="local.nombre" :visitante="visitante.nombre" :idClubLocal="local.id" :idClubVisitante="visitante.id"
+      :partido="partidoId" />
   </div>
 
   <!-- Tab de Archivos -->
   <div v-else-if="selectedTab === 'archivos'">
-    <ArchivosPartidos :local="partido.local.nombre" :visitante="partido.visitante.nombre" />
+    <ArchivosPartidos :local="local.nombre" :visitante="visitante.nombre" />
   </div>
 </template>
 
@@ -139,47 +137,33 @@ const tabs = [
 ]
 const route = useRoute();
 const partidoId = Number(route.params.partidoId);
-
 const selectedTab = ref('informe')
-
-const partido = ref({
-  idPartido: partidoId,
-  torneo: 'Torneo Clausura 2025',
-  fecha: '06/10/2025',
-  hora: '',
-  local: { id: '', nombre: '', goles: 0, amarillas: 0, rojas: 0 },
-  visitante: { id: '', nombre: '', goles: 0, amarillas: 0, rojas: 0 },
-  incidencias: '',
-  observaciones: '',
-})
+const partido = ref({})
+const local = ref({})
+const visitante = ref({})
+const torneo = ref({})
 onMounted(() => {
   traerPartido()
 })
 const traerPartido = () => {
-  axios.get("http://localhost:8080/api/arbitros/designaciones?idArbitro=1&estado=PENDIENTE").then((response) => {
-    const Parsedpartido = response.data[0].partido
-    const hora = Parsedpartido.fechaCalendario.split(',')[2].trim();
-    const [horas, minutos] = hora.split(':');
-    const hora24 = `${horas}:${minutos}`;
-    const partes = Parsedpartido.fechaCalendario.split(',');
-    const dia = partes[0].trim();
-    const fecha = partes[1].trim();
-    const fechaFormateada = `${dia} ${fecha}`;
-
+  axios.get("http://localhost:8080/api/partido/" + partidoId).then((response) => {
+    const datos = response.data;
     partido.value = {
-      idPartido: response.data.idPartido,
-      torneo: Parsedpartido.torneo,
-      fecha: fechaFormateada,
-      hora: hora24,
-      local: { id: Parsedpartido.idClubLocal, nombre: Parsedpartido.local, goles: 0, amarillas: 0, rojas: 0 },
-      visitante: { id: Parsedpartido.idClubVisitante, nombre: Parsedpartido.visitante, goles: 0, amarillas: 0, rojas: 0 },
-      incidencias: '',
-      observaciones: '',
+      idPartido: datos.idPartido,
+      fechaTorneo: datos.fechaTorneo,
+      fechaCalendario: datos.fechaCalendario,
+      estado: datos.estado,
+      local: datos.local,
+      visitante: datos.visitante,
+      torneo: datos.torneo,
     }
-
-
+    local.value = partido.value.local
+    visitante.value = partido.value.visitante
+    torneo.value = partido.value.torneo
+    console.log(partido.value)
   }).catch((error) => {
-  });
+    console.log(error)
+  })
 }
 
 const enviarInforme = () => {
@@ -204,42 +188,42 @@ const DURACION_TIEMPO = 45; // minutos por tiempo
 const DESCANSO = 15; // minutos de descanso
 
 // Calcula la hora de inicio del segundo tiempo automáticamente
-const calcularHoraSegundoTiempo = () => {
-  if (!partido.value.hora) return;
+// const calcularHoraSegundoTiempo = () => {
+//   if (!partido.value.fechaCalendario) return;
 
-  const [horas, minutosStr] = partido.value.hora.split(":").map(Number);
-  const base = new Date();
-  base.setHours(horas, minutosStr, 0, 0);
+//   const [horas, minutosStr] = partido.value.fechaCalendario.split(":").map(Number);
+//   const base = new Date();
+//   base.setHours(horas, minutosStr, 0, 0);
 
-  // sumamos 45 + minutos adicionales + descanso
-  const totalPrimerTiempo =
-    DURACION_TIEMPO + Number(minutos.value.minutosAdicionalesPT || 0) + DESCANSO;
+//   // sumamos 45 + minutos adicionales + descanso
+//   const totalPrimerTiempo =
+//     DURACION_TIEMPO + Number(minutos.value.minutosAdicionalesPT || 0) + DESCANSO;
 
-  base.setMinutes(base.getMinutes() + totalPrimerTiempo);
+//   base.setMinutes(base.getMinutes() + totalPrimerTiempo);
 
-  // devolvemos formato HH:mm
-  const hh = base.getHours().toString().padStart(2, "0");
-  const mm = base.getMinutes().toString().padStart(2, "0");
+//   // devolvemos formato HH:mm
+//   const hh = base.getHours().toString().padStart(2, "0");
+//   const mm = base.getMinutes().toString().padStart(2, "0");
 
-  minutos.value.segundoTiempo = `${hh}:${mm}`;
-};
+//   minutos.value.segundoTiempo = `${hh}:${mm}`;
+// };
 
 // Observa cambios en minutos adicionales o la hora del partido
-watch(
-  () =>
-    [partido.value.hora, minutos.value.minutosAdicionalesPT],
-  calcularHoraSegundoTiempo,
-  { immediate: true }
-);
+// watch(
+//   () =>
+//     [partido.value.fechaCalendario, minutos.value.minutosAdicionalesPT],
+//   calcularHoraSegundoTiempo,
+//   { immediate: true }
+// );
 
 // Totales de minutos jugados
-const totalPrimerTiempo = computed(() => {
-  return DURACION_TIEMPO + Number(minutos.value.minutosAdicionalesPT || 0);
-});
-const totalSegundoTiempo = computed(() => {
-  return DURACION_TIEMPO + Number(minutos.value.minutosAdicionalesST || 0);
-});
-const totalPartido = computed(() => {
-  return totalPrimerTiempo.value + totalSegundoTiempo.value;
-});
+// const totalPrimerTiempo = computed(() => {
+//   return DURACION_TIEMPO + Number(minutos.value.minutosAdicionalesPT || 0);
+// });
+// const totalSegundoTiempo = computed(() => {
+//   return DURACION_TIEMPO + Number(minutos.value.minutosAdicionalesST || 0);
+// });
+// const totalPartido = computed(() => {
+//   return totalPrimerTiempo.value + totalSegundoTiempo.value;
+// });
 </script>

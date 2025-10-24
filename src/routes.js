@@ -8,11 +8,6 @@ const routes = [
     component: () => import("./components/DashBoard.vue"),
   },
   {
-    path: "/partido",
-    name: "partido",
-    component: () => import("./components/PartidoDetalle.vue"),
-  },
-  {
     path: "/partido/:partidoId",
     name: "partido",
     component: () => import("./components/PartidoDetalle.vue"),
